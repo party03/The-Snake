@@ -10,6 +10,7 @@ int x,y,fx,fy,score;
 enum eDirection {STOP=0, LEFT, RIGHT, UP, DOWN};
 eDirection snakeDir;
 
+
 void spawnFruit()
 {
     int minw=2;
@@ -26,13 +27,15 @@ void setup()
     x=width/2;
     y=height/2;
 
+    // fx=1;
+    // fy=1;
     spawnFruit();
 }
 
 void draw()
 {
     system("cls");
-    for(int i=0; i<width; i++)
+    for(int i=0; i<width+1; i++)
     {
         cout<<"#";
     }
@@ -40,9 +43,9 @@ void draw()
 
     for(int i=0; i<height; i++)
     {
-        for(int j=0; j<width; j++)
+        for(int j=0; j<=width; j++)
         {
-            if(j==0 || j==width-1)
+            if(j==0 || j==width)
             {
                 cout<<"#";
             }   
@@ -61,7 +64,7 @@ void draw()
         cout<<"\n";
     }
 
-    for(int i=0; i<width; i++)
+    for(int i=0; i<width+1; i++)
     {
         cout<<"#";
     }
@@ -113,7 +116,7 @@ void logic()
         default:
             break;
     }
-    if(x >= width || x<=0 || y>=height || y<=0)
+    if(x > width || x<0 || y>height || y<0)
     {
         gameover=1;
     }
