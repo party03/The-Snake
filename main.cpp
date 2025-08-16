@@ -4,11 +4,21 @@
 using namespace std;
 
 bool gameover;
-const int width=20;
+const int width=40;
 const int height=20;
 int x,y,fx,fy,score;
 enum eDirection {STOP=0, LEFT, RIGHT, UP, DOWN};
 eDirection snakeDir;
+
+void spawnFruit()
+{
+    int minw=2;
+    int maxw=width-2;
+    int minh=2;
+    int maxh=height-2;
+    fx=(rand() % (maxw - minw + 1)) + minw;
+    fy=(rand() % (maxh - minh + 1)) + minh;
+}
 void setup()
 {
     gameover=0;
@@ -16,8 +26,7 @@ void setup()
     x=width/2;
     y=height/2;
 
-    fx=rand()%width;
-    fy=rand()%height;
+    spawnFruit();
 }
 
 void draw()
@@ -56,6 +65,8 @@ void draw()
     {
         cout<<"#";
     }
+    cout<<"\n";
+    cout<<"Score: "<<score<<"\n";
 }
 
 void input()
@@ -102,9 +113,15 @@ void logic()
         default:
             break;
     }
-    if(x > width || x<0 || y>height || y<0)
+    if(x >= width || x<=0 || y>=height || y<=0)
     {
         gameover=1;
+    }
+
+    if(x==fx && y==fy)
+    {
+        score++;
+        spawnFruit();
     }
 }
 
