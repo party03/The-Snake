@@ -92,20 +92,20 @@ void input()
     {
         switch(_getch())
         {
-            case 'a':
-                snakeDir=LEFT;
+            case 'a': 
+                if(snakeDir != RIGHT) snakeDir = LEFT; 
                 break;
-            case 'w':
-                snakeDir=UP;
+            case 'w': 
+                if(snakeDir != DOWN) snakeDir = UP; 
                 break;
-            case 'd':
-                snakeDir=RIGHT;
+            case 'd': 
+                if(snakeDir != LEFT) snakeDir = RIGHT; 
                 break;
-            case 's':
-                snakeDir=DOWN;
+            case 's': 
+                if(snakeDir != UP) snakeDir = DOWN; 
                 break;
-            case 'x':
-                gameover=true;
+            case 'x': 
+                gameover = true; 
                 break;
         }
     }
@@ -153,10 +153,6 @@ void logic()
     {
         gameover=1;
     }
-    // if(snakeSet.find(encode(x,y))!=snakeSet.end())
-    // {
-    //     gameover=1;
-    // }
 
     if(x==fx && y==fy)
     {
