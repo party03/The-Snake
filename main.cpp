@@ -1,5 +1,6 @@
 #include<bits/stdc++.h>
 #include<conio.h>
+#include<windows.h>
 using namespace std;
 
 bool gameover;
@@ -59,11 +60,52 @@ void draw()
 
 void input()
 {
-
+    if(_kbhit())
+    {
+        switch(_getch())
+        {
+            case 'a':
+                snakeDir=LEFT;
+                break;
+            case 'w':
+                snakeDir=UP;
+                break;
+            case 'd':
+                snakeDir=RIGHT;
+                break;
+            case 's':
+                snakeDir=DOWN;
+                break;
+            case 'x':
+                gameover=true;
+                break;
+        }
+    }
 }
 
-void logic(){
-
+void logic()
+{
+    switch(snakeDir)
+    {
+        case LEFT:
+            x--;
+            break;
+        case UP:
+            y--;
+            break;
+        case RIGHT:
+            x++;
+            break;
+        case DOWN:
+            y++;
+            break;
+        default:
+            break;
+    }
+    if(x > width || x<0 || y>height || y<0)
+    {
+        gameover=1;
+    }
 }
 
 int main()
@@ -74,6 +116,6 @@ int main()
         draw();
         input();
         logic();
-        // sleep(10);
+        Sleep(100);
     }
 }
