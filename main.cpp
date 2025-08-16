@@ -12,9 +12,24 @@ eDirection snakeDir;
 deque<pair<int,int>> snakeBody;
 set<long long> snakeSet;
 
+void hideCursor() 
+{
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(out, &cursorInfo);
+    cursorInfo.bVisible = false; // hide cursor
+    SetConsoleCursorInfo(out, &cursorInfo);
+}
+
 long long encode(int x, int y) 
 {
     return ((long long)x << 32) | (unsigned int)y;
+}
+void setCursorPosition(int x, int y) {
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
 void spawnFruit()
@@ -23,8 +38,10 @@ void spawnFruit()
     int maxw=width-2;
     int minh=2;
     int maxh=height-2;
-    fx=(rand() % (maxw - minw + 1)) + minw;
-    fy=(rand() % (maxh - minh + 1)) + minh;
+    do{
+        fx=(rand() % (maxw - minw + 1)) + minw;
+        fy=(rand() % (maxh - minh + 1)) + minh;
+    }while(snakeSet.find(encode(fx, fy)) != snakeSet.end());
 }
 void setup()
 {
@@ -42,7 +59,7 @@ void setup()
 
 void draw()
 {
-    system("cls");
+    setCursorPosition(0,0);
     for(int i=0; i<width+1; i++)
     {
         cout<<"#";
@@ -61,15 +78,33 @@ void draw()
             }   
             else if(i==y && j==x)
             {
-                cout<<"O";
+                switch(snakeDir)
+                {
+                    case UP:
+                        cout<<"▲";
+                        break;
+                    case DOWN:
+                        cout<<"▼";
+                        break;
+                    case LEFT:
+                        cout<<"◄";
+                        break;
+                    case RIGHT:
+                        cout<<"►";
+                        break;
+                    default:
+                        cout<<"O";
+                        break;
+                }
+                // cout<<"■";
             }
             else if(snakeSet.find(encode(j,i))!=snakeSet.end())
             {
-                cout<<"o";
+                cout<<"■";
             }
             else if(i==fy && j==fx)
             {
-                cout<<"F";
+                cout<<"⬤";
             }
             else{
                 cout<<" ";
@@ -167,12 +202,18 @@ void logic()
 
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
     setup();
+    hideCursor();
     while(!gameover)
     {
         draw();
         input();
         logic();
+        int speed = 100;
+        if(score % 5 == 0 && speed > 30) speed -= 8; // faster every 5 points
+        Sleep(speed);
+
         Sleep(100);
     }
 }
