@@ -3,15 +3,19 @@
 #include<windows.h>
 using namespace std;
 
-bool gameover;
+bool gameover,grow;
 const int width=40;
 const int height=20;
 int x,y,fx,fy,score;
 enum eDirection {STOP=0, LEFT, RIGHT, UP, DOWN};
 eDirection snakeDir;
-int snakeLen;
-vector<pair<int,int>> snakeBody;
-map<pair<int,int>,bool> bodyMap;
+deque<pair<int,int>> snakeBody;
+set<long long> snakeSet;
+
+long long encode(int x, int y) 
+{
+    return ((long long)x << 32) | (unsigned int)y;
+}
 
 void spawnFruit()
 {
@@ -30,21 +34,14 @@ void setup()
     y=height/2;
     spawnFruit();
 
-    snakeLen=1;
-    for(int i=0; i<snakeLen; i++)
-    {
-        snakeBody.push_back({-1,-1});
-    }
+    snakeBody.push_back({x,y});
+    snakeSet.insert(encode(x,y));
+    snakeBody.push_back({x+1,y});
+    snakeSet.insert(encode(x+1,y));
 }
 
 void draw()
 {
-    bodyMap.clear();
-    for(int k=0; k<snakeLen; k++)
-    {
-        bodyMap.insert({snakeBody[k],1});
-    }
-
     system("cls");
     for(int i=0; i<width+1; i++)
     {
@@ -66,10 +63,9 @@ void draw()
             {
                 cout<<"O";
             }
-            else if(bodyflag<snakeLen && bodyMap.find({j,i})!=bodyMap.end())
+            else if(snakeSet.find(encode(j,i))!=snakeSet.end())
             {
                 cout<<"o";
-                bodyflag++;
             }
             else if(i==fy && j==fx)
             {
@@ -116,11 +112,18 @@ void input()
 }
 void moveSnakeBody()
 {
-    for(int i=snakeLen-1; i>=1; i--)
+    if(snakeSet.find(encode(x,y))!=snakeSet.end())
     {
-        snakeBody[i]=snakeBody[i-1];
+        gameover=1;
     }
-    snakeBody[0]={x,y};
+    snakeBody.push_front({x,y});
+    snakeSet.insert(encode(x,y));
+    if(!grow)
+    {
+        pair<int,int> tail = snakeBody.back();
+        snakeBody.pop_back();
+        snakeSet.erase(encode(tail.first,tail.second));
+    }
 }
 
 void logic()
@@ -128,20 +131,20 @@ void logic()
     switch(snakeDir)
     {
         case LEFT:
-            moveSnakeBody();
             x--;
+            moveSnakeBody();
             break;
         case UP:
-            moveSnakeBody();
             y--;
+            moveSnakeBody();
             break;
         case RIGHT:
-            moveSnakeBody();
             x++;
+            moveSnakeBody();
             break;
         case DOWN:
-            moveSnakeBody();
             y++;
+            moveSnakeBody();
             break;
         default:
             break;
@@ -150,17 +153,19 @@ void logic()
     {
         gameover=1;
     }
-    if(bodyMap.find({x,y})!=bodyMap.end())
-    {
-        gameover=1;
-    }
+    // if(snakeSet.find(encode(x,y))!=snakeSet.end())
+    // {
+    //     gameover=1;
+    // }
 
     if(x==fx && y==fy)
     {
         score++;
         spawnFruit();
-        snakeLen++;
-        snakeBody.push_back(snakeBody[0]);
+        grow=1;
+    }
+    else{
+        grow=0;
     }
 }
 
