@@ -9,7 +9,9 @@ const int height=20;
 int x,y,fx,fy,score;
 enum eDirection {STOP=0, LEFT, RIGHT, UP, DOWN};
 eDirection snakeDir;
-
+int snakeLen;
+vector<pair<int,int>> snakeBody;
+map<pair<int,int>,bool> bodyMap;
 
 void spawnFruit()
 {
@@ -26,25 +28,36 @@ void setup()
     snakeDir=STOP;
     x=width/2;
     y=height/2;
-
-    // fx=1;
-    // fy=1;
     spawnFruit();
+
+    snakeLen=1;
+    for(int i=0; i<snakeLen; i++)
+    {
+        snakeBody.push_back({-1,-1});
+    }
 }
 
 void draw()
 {
+    bodyMap.clear();
+    for(int k=0; k<snakeLen; k++)
+    {
+        bodyMap.insert({snakeBody[k],1});
+    }
+
     system("cls");
     for(int i=0; i<width+1; i++)
     {
         cout<<"#";
     }
     cout<<"\n";
+    
 
     for(int i=0; i<height; i++)
     {
         for(int j=0; j<=width; j++)
         {
+            int bodyflag=0;
             if(j==0 || j==width)
             {
                 cout<<"#";
@@ -52,6 +65,11 @@ void draw()
             else if(i==y && j==x)
             {
                 cout<<"O";
+            }
+            else if(bodyflag<snakeLen && bodyMap.find({j,i})!=bodyMap.end())
+            {
+                cout<<"o";
+                bodyflag++;
             }
             else if(i==fy && j==fx)
             {
@@ -96,21 +114,33 @@ void input()
         }
     }
 }
+void moveSnakeBody()
+{
+    for(int i=snakeLen-1; i>=1; i--)
+    {
+        snakeBody[i]=snakeBody[i-1];
+    }
+    snakeBody[0]={x,y};
+}
 
 void logic()
 {
     switch(snakeDir)
     {
         case LEFT:
+            moveSnakeBody();
             x--;
             break;
         case UP:
+            moveSnakeBody();
             y--;
             break;
         case RIGHT:
+            moveSnakeBody();
             x++;
             break;
         case DOWN:
+            moveSnakeBody();
             y++;
             break;
         default:
@@ -120,11 +150,17 @@ void logic()
     {
         gameover=1;
     }
+    if(bodyMap.find({x,y})!=bodyMap.end())
+    {
+        gameover=1;
+    }
 
     if(x==fx && y==fy)
     {
         score++;
         spawnFruit();
+        snakeLen++;
+        snakeBody.push_back(snakeBody[0]);
     }
 }
 
