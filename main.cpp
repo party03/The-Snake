@@ -58,7 +58,8 @@ void setup()
     x=width/2;
     y=height/2;
     spawnFruit();
-
+    snakeBody.clear();
+    snakeSet.clear();
     snakeBody.push_back({x,y});
     snakeSet.insert(encode(x,y));
     snakeBody.push_back({x+1,y});
@@ -237,8 +238,8 @@ void startPlaying()
         draw();
         input();
         logic();
-        int speed = 100;
-        if(score % 5 == 0 && speed > 30) speed -= 8; // faster every 5 points
+        int speed = 20*(6-toggleVariable[2]);
+        // if(score % 5 == 0 && speed > 30) speed -= 8; // faster every 5 points
         Sleep(speed);
     }
     system("cls");
