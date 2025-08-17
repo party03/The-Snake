@@ -4,6 +4,7 @@
 #include<time.h>
 using namespace std;
 
+//game variables
 bool gameover,grow;
 const int width=40;
 const int height=20;
@@ -12,6 +13,10 @@ enum eDirection {STOP=0, LEFT, RIGHT, UP, DOWN};
 eDirection snakeDir;
 deque<pair<int,int>> snakeBody;
 set<long long> snakeSet;
+
+//menu variables
+bool quitgame;
+int selectedOption;
 
 void hideCursor() 
 {
@@ -120,6 +125,7 @@ void draw()
     }
     cout<<"\n";
     cout<<"Score: "<<score<<"\n";
+    cout<<"Press 'x' to exit game to main menu\n";
 }
 
 void input()
@@ -201,12 +207,9 @@ void logic()
     }
 }
 
-int main()
+void startPlaying()
 {
-    srand(time(NULL));
-    SetConsoleOutputCP(CP_UTF8);
     setup();
-    hideCursor();
     while(!gameover)
     {
         draw();
@@ -218,4 +221,88 @@ int main()
 
         Sleep(100);
     }
+    system("cls");
+}
+
+void setupMenu(){
+    quitgame=0;
+    selectedOption=0;
+}
+
+void drawMenu() 
+{
+    setCursorPosition(0,0);
+
+    cout << "\n\n";
+    cout << "  ╔══════════════════════════════════════╗  \n";
+    cout << "  ║                                      ║  \n";
+    cout << "  ║          S N A K E  G A M E          ║  \n";
+    cout << "  ║                                      ║  \n";
+    cout << "  ╚══════════════════════════════════════╝  \n\n";
+
+    string options[3] = {"Start Game", "Game Settings", "Quit Game"};
+
+    for (int i = 0; i < 3; i++) 
+    {
+        if (i == selectedOption) 
+        {
+            cout << "\t  ► " << options[i] << "\n";   // highlighted option
+        } 
+        else 
+        {
+            cout << "\t    " << options[i] << "\n";
+        }
+    }
+}
+
+void menuInput()
+{
+    if(_kbhit())
+    {
+        switch(_getch())
+        {
+            case 'w': 
+                selectedOption--;
+                if(selectedOption<0)
+                {
+                    selectedOption=2;
+                }
+                break;
+            case 's': 
+                selectedOption++;
+                if(selectedOption>2)
+                {
+                    selectedOption=0;
+                }
+                break;
+            case 13: 
+                if(selectedOption==0)
+                {
+                    startPlaying();
+                }
+                else if(selectedOption==2)
+                {
+                    quitgame=1;
+                }
+                break;
+        }
+    }
+}
+
+void menu()
+{
+    system("cls");
+    while(!quitgame)
+    {
+        drawMenu();
+        menuInput();
+    }
+    system("cls");
+}
+int main()
+{
+    srand(time(NULL));
+    SetConsoleOutputCP(CP_UTF8);
+    hideCursor();
+    menu();
 }
