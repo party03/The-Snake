@@ -16,7 +16,9 @@ set<long long> snakeSet;
 
 //menu variables
 bool quitgame;
+bool showsettings;
 int selectedOption;
+vector<int> toggleVariable;
 
 void hideCursor() 
 {
@@ -154,7 +156,7 @@ void input()
 }
 void moveSnakeBody()
 {
-    if(snakeSet.find(encode(x,y))!=snakeSet.end())
+    if(!toggleVariable[1] && snakeSet.find(encode(x,y))!=snakeSet.end())
     {
         gameover=1;
     }
@@ -193,7 +195,27 @@ void logic()
     }
     if(x > width || x<0 || y>height || y<0)
     {
-        gameover=1;
+        if(toggleVariable[0])
+        {
+            if(x<0)
+            {
+                x=width;
+            }
+            if(x>width)
+            {
+                x=0;
+            }
+            if(y<0)
+            {
+                y=height;
+            }
+            if(y>height)
+            {
+                y=0;
+            }
+        }
+        else
+            gameover=1;
     }
 
     if(x==fx && y==fy)
@@ -218,8 +240,6 @@ void startPlaying()
         int speed = 100;
         if(score % 5 == 0 && speed > 30) speed -= 8; // faster every 5 points
         Sleep(speed);
-
-        Sleep(100);
     }
     system("cls");
 }
@@ -255,6 +275,105 @@ void drawMenu()
     }
 }
 
+void drawSettings()
+{
+    setCursorPosition(0,0);
+
+    cout << "\n\n";
+    cout << "  ╔══════════════════════════════════════╗  \n";
+    cout << "  ║            O P T I O N S             ║  \n";
+    cout << "  ╚══════════════════════════════════════╝  \n\n";
+
+    vector<string> options = {"Loop Walls: ", "Self COllision: ","Speed(0-5): ","Reset to Default", "Back to Main Menu"};
+
+    for (int i = 0; i < options.size()-2; i++) 
+    {
+        if (i == selectedOption)
+        {
+            cout << "\t  ► " << options[i] << toggleVariable[i]<< "\n";   // highlighted option
+        } 
+        else 
+        {
+            cout << "\t    " << options[i] << toggleVariable[i]<< "\n";
+        }
+    }
+    for (int i = options.size()-2; i < options.size(); i++) 
+    {
+        if (i == selectedOption)
+        {
+            cout << "\t  ► " << options[i] << "\n";   // highlighted option
+        } 
+        else 
+        {
+            cout << "\t    " << options[i] << "\n";
+        }
+    }
+
+}
+
+void settingsInput()
+{
+    if(_kbhit())
+    {
+        switch(_getch())
+        {
+            case 'w': 
+                selectedOption--;
+                if(selectedOption<0)
+                {
+                    selectedOption=2;
+                }
+                break;
+            case 's': 
+                selectedOption++;
+                if(selectedOption>4)
+                {
+                    selectedOption=0;
+                }
+                break;
+            case 13: 
+                if(selectedOption==0)
+                {
+                    toggleVariable[0]=1-toggleVariable[0];
+                }
+                else if(selectedOption==1)
+                {
+                    toggleVariable[1]=1-toggleVariable[1];
+                }
+                else if(selectedOption==2)
+                {
+                    toggleVariable[2]++;
+                    if(toggleVariable[2]>5)
+                    {
+                        toggleVariable[2]=1;
+                    }
+                }
+                else if(selectedOption==3)
+                {
+                    toggleVariable={0,0,1};
+                }
+                else if (selectedOption==4)
+                {
+                    showsettings=0;
+                    selectedOption=0;
+                }
+                break;
+        }
+    }
+}
+
+void settings()
+{
+    system("cls");
+    showsettings=1;
+    while(showsettings)
+    {
+        drawSettings();
+        settingsInput();
+    }
+    system("cls");
+}
+
 void menuInput()
 {
     if(_kbhit())
@@ -280,6 +399,10 @@ void menuInput()
                 {
                     startPlaying();
                 }
+                else if(selectedOption==1)
+                {
+                    settings();
+                }
                 else if(selectedOption==2)
                 {
                     quitgame=1;
@@ -288,10 +411,10 @@ void menuInput()
         }
     }
 }
-
 void menu()
 {
     system("cls");
+    toggleVariable={0,0,1}; //infinite walls, selfcrossing, speed
     while(!quitgame)
     {
         drawMenu();
