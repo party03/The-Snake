@@ -1,6 +1,7 @@
 #include<bits/stdc++.h>
 #include<conio.h>
 #include<windows.h>
+#include<time.h>
 using namespace std;
 
 bool gameover,grow;
@@ -202,6 +203,7 @@ void logic()
 
 int main()
 {
+    srand(time(NULL));
     SetConsoleOutputCP(CP_UTF8);
     setup();
     hideCursor();
